@@ -1,0 +1,19 @@
+{
+  "name": "daily-planner",
+  "version": "1.0.0",
+  "description": "A daily planner application built with FastAPI and Vue 3.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.2.0",
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "vite": "^2.0.0",
+    "@vitejs/plugin-vue": "^1.0.0"
+  },
+  "license": "MIT"
+}
