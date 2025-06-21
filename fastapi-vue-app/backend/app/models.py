@@ -11,23 +11,22 @@ class Priority(enum.Enum):
     IMPORTANT = "IMPORTANT"
     LOW = "LOW"
 
-    
 
 class Task(BaseModel):
-    id: Optional[str] = Field(default_factory=uuid.uuid4)
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4)
     title: Optional[str] = None
     completed: bool = False
     created_at: datetime = datetime.now()
     priority: Priority = Field(default=Priority.IMPORTANT)
-    
+
 
 class Note(BaseModel):
-    id: Optional[str] = None
+    id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4)
     content: str
     created_at: datetime = datetime.now()
-    
+
+
 class Day(BaseModel):
-    day: date 
+    day: date
     tasks: list[Task] = Field(default_factory=list)
     note: Optional[Note] = None
-

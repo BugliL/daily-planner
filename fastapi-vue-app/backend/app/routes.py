@@ -1,46 +1,45 @@
+from uuid import UUID
 from fastapi import APIRouter, HTTPException, Depends
 from models import Task
-from database import get_db
-from sqlalchemy.orm import Session
+from database import fetch_all_tasks, fetch_task_by_id, get_db, insert_task
+
+from pymongo.asynchronous.database import AsyncDatabase
 
 router = APIRouter()
 
-@router.post("/tasks/", response_model=Task)
-def create_task(task: Task, db: Session =Depends(get_db())):
-    db.add(task)
-    db.commit()
-    db.refresh(task)
-    return task
+
+@router.get("/init/")
+async def init_db(db: AsyncDatabase = Depends(get_db)):
+    await db.create_collection("Days")
+
+    # Initialize the database with some data
+    return {"message": "Database initialized"}
+
+
+@router.post("/tasks/")
+async def create_task(task: Task, db: AsyncDatabase = Depends(get_db)):
+    return await insert_task(task)
+
 
 @router.get("/tasks/", response_model=list[Task])
-def read_tasks(skip: int = 0, limit: int = 10, db: Session =Depends(get_db())):
-    tasks = db.query(Task).offset(skip).limit(limit).all()
-    return tasks
+async def read_tasks(
+    skip: int = 0, limit: int = 10, db: AsyncDatabase = Depends(get_db)
+):
+    return await fetch_all_tasks(skip=skip, limit=limit)
+
 
 @router.get("/tasks/{task_id}", response_model=Task)
-def read_task(task_id: int, db: Session =Depends(get_db())):
-    task = db.query(Task).filter(Task.id == task_id).first()
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task
+async def read_task(task_id: str, db: AsyncDatabase = Depends(get_db)):
+    return await fetch_task_by_id(task_id=task_id)
+
 
 @router.put("/tasks/{task_id}", response_model=Task)
-def update_task(task_id: int, task: Task, db: Session =Depends(get_db())):
-    db_task = db.query(Task).filter(Task.id == task_id).first()
-    if db_task is None:
+async def update_task(task_id: str, task: Task, db: AsyncDatabase = Depends(get_db)):
+    if (db_task := await fetch_task_by_id(task_id=task_id)) is None:
         raise HTTPException(status_code=404, detail="Task not found")
-    for key, value in task.dict().items():
+
+    for key, value in task.model_dump().items():
         setattr(db_task, key, value)
-    db.commit()
-    db.refresh(db_task)
-    return db_task
 
-@router.delete("/tasks/{task_id}")
-def delete_task(task_id: int, db: Session =Depends(get_db())):
-    db_task = db.query(Task).filter(Task.id == task_id).first()
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+    return await update_task(task_id=task_id, task=db_task)
 
-    db.delete(db_task)
-    db.commit()
-    return {"detail": "Task deleted"}
