@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Daily Planner</h1>
+    <h1 class="underline">Daily Planner</h1>
     <TaskList />
   </div>
 </template>
@@ -10,6 +10,8 @@ import TaskList from './components/TaskList.vue';
 </script>
 
 <style>
+@import 'tailwindcss';
+
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
