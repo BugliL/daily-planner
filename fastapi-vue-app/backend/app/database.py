@@ -1,8 +1,9 @@
+import os
 from pymongo import AsyncMongoClient
 from pymongo.asynchronous.database import AsyncDatabase
 
-DATABASE_URL = "mongodb://localhost:27017"
-DATABASE_NAME = "daily_planner"
+DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_NAME = os.getenv("DATABASE_NAME", "daily_planner")
 
 client: AsyncMongoClient = AsyncMongoClient(DATABASE_URL)
 database = client.get_database(DATABASE_NAME)
