@@ -1,7 +1,4 @@
-from fastapi import HTTPException
-from uuid import UUID
 from pymongo import AsyncMongoClient
-from models import Task
 from pymongo.asynchronous.database import AsyncDatabase
 
 DATABASE_URL = "mongodb://localhost:27017"

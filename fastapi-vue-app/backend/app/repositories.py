@@ -49,3 +49,11 @@ class TaskRepository:
     async def delete(self, task_id: str | UUID) -> bool:
         result = await self.collection.delete_one({"_id": str(task_id)})
         return bool(result.deleted_count)
+
+    async def get_daily(self, date: str) -> Iterable[Task]:
+        """
+        Fetch tasks for a specific date.
+        The date format should be 'YYYY-MM-DD'.
+        """
+        docs = await self.collection.find({"task_date": date}).to_list(length=None)
+        return map(Task.model_validate, docs)

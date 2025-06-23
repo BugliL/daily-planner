@@ -1,4 +1,3 @@
-from dataclasses import Field
 import enum
 import uuid
 from pydantic import BaseModel, Field
@@ -14,6 +13,7 @@ class Priority(enum.Enum):
 
 class Task(BaseModel):
     id: Optional[uuid.UUID] = Field(default_factory=uuid.uuid4, alias="_id")
+    task_date: date = Field(default_factory=date.today)
     title: Optional[str] = None
     completed: bool = False
     created_at: datetime = datetime.now()

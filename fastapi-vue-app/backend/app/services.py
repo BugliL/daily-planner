@@ -1,5 +1,4 @@
 from typing import Iterable
-from fastapi import HTTPException
 from uuid import UUID
 from pymongo import AsyncMongoClient
 from models import Task
@@ -68,3 +67,9 @@ class TaskService:
         Update an existing task in the self.db.
         """
         return await self.repository.update(task_id=task_id, task=task)
+
+    async def fetch_daily(self, date: str) -> Iterable[Task]:
+        """
+        Retrieve tasks for a specific date.
+        """
+        return await self.repository.get_daily(date=date)
